@@ -18,11 +18,11 @@ public class SortJsonController {
     }
 
     @PostMapping("/sort")
-    public Map<String, Object> processJson(@RequestBody Map<String, Object> jsonList) {
+    public Map<String, Object> processJson(@RequestBody TreeMap<String, Object> jsonList) {
         // Sử dụng TreeMap để lưu trữ key và value và sắp xếp key tự động.
-        TreeMap<String, Object> sortedJsonMap = new TreeMap<>(jsonList);
+        //TreeMap<String, Object> sortedJsonMap = new TreeMap<>(jsonList);
 
         // Trả về TreeMap đã sắp xếp.
-        return sortedJsonMap;
+        return jsonList;
     }
 }
