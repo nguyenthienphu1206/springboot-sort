@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin("*")
 public class SortJsonController {
 
     @GetMapping
