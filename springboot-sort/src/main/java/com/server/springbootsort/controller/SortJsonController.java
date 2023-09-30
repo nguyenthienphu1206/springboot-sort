@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 @RestController
@@ -21,8 +22,34 @@ public class SortJsonController {
         return new ResponseEntity<>("Successfully", HttpStatus.OK);
     }
 
+    @PostMapping("/checkFormat")
+    public Map<String, Object> checkFormat(@RequestBody TreeMap<String, Object> jsonList) {
+
+        Set<String> keySet = jsonList.keySet();
+
+        for (String key : keySet) {
+            String input = "autoStringForOneStep";
+
+            // Sử dụng hàm split với biểu thức chính quy để tách chuỗi
+            String[] parts = key.split("(?=[A-Z])");
+
+            // In ra các phần tử đã tách
+            for (String part : parts) {
+                System.out.print(part);
+            }
+            System.out.println();
+        }
+
+        return jsonList;
+    }
+
     @PostMapping("/sort")
     public Map<String, Object> processJson(@RequestBody TreeMap<String, Object> jsonList) {
+
+        // Tạo json theo format
+        log.info("" + jsonList);
+        jsonList = createFormattedJson(jsonList);
+
         // Sắp xếp TreeMap sử dụng Comparator
         TreeMap<String, Object> sortedJsonMap = new TreeMap<>(new JsonKeyComparator());
 
@@ -47,6 +74,7 @@ public class SortJsonController {
             if (variableNameComparison == 0) {
 
                 //log.info("value: " + key1.compareTo(key2));
+                // sắp xếp theo kí tự @(tên biến) luôn nằm kề sau tên biến
                 if (key1.compareTo(key2) > 0) {
                     return -1;
                 }
@@ -58,5 +86,32 @@ public class SortJsonController {
             // Nếu các tên biến khác nhau, trả về kết quả của so sánh tên biến
             return variableNameComparison;
         }
+    }
+
+    private TreeMap<String, Object> createFormattedJson(TreeMap<String, Object> jsonList) {
+
+        TreeMap<String, Object> formattedJson = new TreeMap<>();
+        Set<String> keySet = jsonList.keySet();
+
+        for (String key : keySet) {
+
+            // Sử dụng hàm split với biểu thức chính quy để tách chuỗi
+            String[] parts = key.split("(?=[A-Z])");
+
+            Object value = jsonList.get(key);
+
+            StringBuilder result = new StringBuilder();
+            for (int i = 0; i < parts.length; i++) {
+                String part = parts[i].toLowerCase(); // Chuyển thành chữ thường
+                result.append(part);
+                if (i < parts.length - 1) {
+                    result.append("_"); // Thêm dấu gạch dưới (_) nếu không phải phần tử cuối cùng
+                }
+            }
+
+            formattedJson.put(result.toString(), value);
+        }
+
+        return formattedJson;
     }
 }
