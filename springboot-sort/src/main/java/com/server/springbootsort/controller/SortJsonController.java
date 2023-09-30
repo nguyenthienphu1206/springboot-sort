@@ -5,10 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -23,32 +22,32 @@ public class SortJsonController {
     }
 
     @PostMapping("/checkFormat")
-    public Map<String, Object> checkFormat(@RequestBody TreeMap<String, Object> jsonList) {
+    public List<String> checkFormat(@RequestBody TreeMap<String, Object> jsonList) {
 
         Set<String> keySet = jsonList.keySet();
 
+        List<String> notFormattedKey = new ArrayList<>();
+
         for (String key : keySet) {
-            String input = "autoStringForOneStep";
 
-            // Sử dụng hàm split với biểu thức chính quy để tách chuỗi
-            String[] parts = key.split("(?=[A-Z])");
+            Pattern pattern = Pattern.compile("[A-Z]");
+            Matcher matcher = pattern.matcher(key);
 
-            // In ra các phần tử đã tách
-            for (String part : parts) {
-                System.out.print(part);
+            if (matcher.find()) {
+                notFormattedKey.add(key);
             }
-            System.out.println();
+
         }
 
-        return jsonList;
+        return notFormattedKey;
     }
 
     @PostMapping("/sort")
     public Map<String, Object> processJson(@RequestBody TreeMap<String, Object> jsonList) {
 
         // Tạo json theo format
-        log.info("" + jsonList);
-        jsonList = createFormattedJson(jsonList);
+        //log.info("" + jsonList);
+        //jsonList = createFormattedJson(jsonList);
 
         // Sắp xếp TreeMap sử dụng Comparator
         TreeMap<String, Object> sortedJsonMap = new TreeMap<>(new JsonKeyComparator());
